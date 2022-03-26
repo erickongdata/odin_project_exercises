@@ -1,39 +1,38 @@
 function computerPlay() {
-  const play = ["Rock", "Paper", "Scissors"];
+  const play = ["rock", "paper", "scissors"];
   const choice = Math.floor(Math.random() * 3);
   return play[choice]; // random selection
 }
 
-function playRound(playerSelection, computerPlay) {
+function playRound(playerSelection, computerSelection) {
   // playRound returns the results of each round of play
-  const player = playerSelection.toLowerCase();
-  const computer = computerPlay.toLowerCase();
-  const playerF = player[0].toUpperCase() + player.slice(1); // Capitalize word
-  const computerF = computer[0].toUpperCase() + computer.slice(1); // Capitalize word
+  const player = playerSelection;
+  const computer = computerSelection;
+  const playerF = player.toUpperCase(); // Capitalize word
+  const computerF = computer.toUpperCase(); // Capitalize word
 
-  if (
-    (player === "rock" && computer === "scissors") ||
+  return (player === "rock" && computer === "scissors") ||
     (player === "scissors" && computer === "paper") ||
     (player === "paper" && computer === "rock")
-  ) {
-    return `You win! ${playerF} beats ${computerF}.`;
-  }
-  if (
-    (computer === "rock" && player === "scissors") ||
-    (computer === "scissors" && player === "paper") ||
-    (computer === "paper" && player === "rock")
-  ) {
-    return `You lose! ${playerF} loses to ${computerF}.`;
-  }
-  return `Its a tie! You both chose ${playerF}`;
+    ? `You win! ${playerF} beats ${computerF}.`
+    : player === computer
+    ? `Its a tie! You both chose ${playerF}`
+    : `You lose! ${playerF} loses to ${computerF}.`;
 }
 
-function printResults(playerScore, computerScore) {
+function printFinalResults(playerScore, computerScore) {
   return playerScore > computerScore
     ? "You win! Game over"
-    : playerScore < computerScore
-    ? "You lose! Game over"
-    : "Its a tie. Game over";
+    : "You lose! Game over"
+}
+
+function addReset() {
+  const reset = document.querySelector(".reset");
+  const resetBtn = document.createElement("button");
+  resetBtn.setAttribute("style", "font-size: 1.5rem; margin-top: 2rem;");
+  resetBtn.textContent = "Play again";
+  reset.appendChild(resetBtn);
+  resetBtn.addEventListener("click", () => window.location.reload());
 }
 
 function game() {
@@ -44,13 +43,16 @@ function game() {
   const buttons = document.querySelectorAll(".btn");
   const display = document.querySelector(".display-selection");
   const score = document.querySelector(".score");
+  // Style elements
+  buttons.forEach((btn) => btn.setAttribute("style", "font-size: 2.5rem; margin-top: 2rem;"));
   display.setAttribute("style", "font-size: 2rem; color: blue; margin-top: 2rem;");
   score.setAttribute("style", "white-space: pre-line; font-size: 1.5rem; color: black; margin-top: 2rem;");
-  buttons.forEach((btn) => btn.addEventListener("click", getSelection));
+  // Wait for button press
+  buttons.forEach((btn) => btn.addEventListener("click", () => playHand(btn.id)));
 
-
-  function getSelection(e) {
-    const playerSelection = e.target.id;
+  // Shows results for each round
+  function playHand(select) {
+    const playerSelection = select;
     const computerSelection = computerPlay();
     const result = playRound(playerSelection, computerSelection);
     if (result.includes("win")) {
@@ -61,9 +63,10 @@ function game() {
     }
     display.textContent = result;
     score.textContent = `Player score: ${playerScore}\nComputer score: ${computerScore}\n`;
-    if (playerScore == 5 || computerScore == 5) {
-      score.textContent += printResults(playerScore, computerScore);
-      buttons.forEach((btn) => btn.removeEventListener("click", getSelection));
+    if (playerScore === 5 || computerScore === 5) {
+      score.textContent += printFinalResults(playerScore, computerScore);
+      buttons.forEach((btn) => (btn.disabled = true)); // disables buttons with game is over
+      addReset(); // adds reset button
     }
   }
 }
