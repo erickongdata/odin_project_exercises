@@ -40,10 +40,17 @@ function game() {
   // Initialize scores and keep track
   let playerScore = 0;
   let computerScore = 0;
-  // Play for 5 rounds
-  for (let i = 0; i < 5; i++) {
-    console.log(`Round ${i + 1}/5`);
-    const playerSelection = prompt("Rock, paper, or Scissors? ");
+
+  const buttons = document.querySelectorAll(".btn");
+  const display = document.querySelector(".display-selection");
+  const score = document.querySelector(".score");
+  display.setAttribute("style", "font-size: 2rem; color: blue; margin-top: 2rem;");
+  score.setAttribute("style", "white-space: pre-line; font-size: 1.5rem; color: black; margin-top: 2rem;");
+  buttons.forEach((btn) => btn.addEventListener("click", getSelection));
+
+
+  function getSelection(e) {
+    const playerSelection = e.target.id;
     const computerSelection = computerPlay();
     const result = playRound(playerSelection, computerSelection);
     if (result.includes("win")) {
@@ -52,13 +59,13 @@ function game() {
     if (result.includes("lose")) {
       computerScore++;
     }
-    console.log(result);
-    console.log(`Player score: ${playerScore}`);
-    console.log(`Computer score: ${computerScore}`);
+    display.textContent = result;
+    score.textContent = `Player score: ${playerScore}\nComputer score: ${computerScore}\n`;
+    if (playerScore == 5 || computerScore == 5) {
+      score.textContent += printResults(playerScore, computerScore);
+      buttons.forEach((btn) => btn.removeEventListener("click", getSelection));
+    }
   }
-  // Print out final results
-  const finalResult = printResults(playerScore, computerScore);
-  console.log(finalResult);
 }
 
 game();
