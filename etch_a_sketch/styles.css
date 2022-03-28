@@ -1,5 +1,5 @@
 :root {
-  --container-size: 300px;
+  --container-size: 640px;
   --square-size: 100%;
 }
 
@@ -13,7 +13,7 @@
   display: grid;
   justify-items: center;
   align-items: center;
-  gap: calc(0.05 * var(--container-size));
+  /* gap: calc(0.05 * var(--container-size)); */
   width: var(--container-size);
   height: var(--container-size);
   margin-inline: auto;

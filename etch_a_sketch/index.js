@@ -9,11 +9,9 @@ resetBtn.addEventListener("click", resetBoard);
 // Add container to document
 const container = document.createElement("div");
 container.classList.add("container");
-container.setAttribute("style", "grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);");
 body.appendChild(container);
-
 // Add 16 squares to container
-createSquares(4);
+createSquares(5);
 
 // Add light square effect
 function lightSquare(square) {
@@ -25,10 +23,6 @@ function resetBoard() {
   squares.forEach((sqr) => sqr.classList.remove("hover"));
   squares.forEach((sqr) => container.removeChild(sqr));
   const size = prompt("Grid size? ");
-  container.setAttribute(
-    "style",
-    `grid-template-columns: repeat(${size}, 1fr); grid-template-rows: repeat(${size}, 1fr);`
-  );
   createSquares(size);
 }
 
@@ -38,6 +32,15 @@ function createSquares(size) {
     square.classList.add("square");
     square.classList.add(`square${i}`);
     container.appendChild(square);
+  }
+  container.setAttribute(
+    "style",
+    `grid-template-columns: repeat(${size}, 1fr); grid-template-rows: repeat(${size}, 1fr);`
+  );
+  if (size < 24) {
+    container.style.gap = `${64 / size}px`;
+  } else {
+    container.style.gap = `1px`;
   }
   const squares = document.querySelectorAll(".square");
   squares.forEach((sqr) => sqr.addEventListener("mouseover", () => lightSquare(sqr)));
