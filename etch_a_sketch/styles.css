@@ -13,19 +13,20 @@
   display: grid;
   justify-items: center;
   align-items: center;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
   gap: calc(0.05 * var(--container-size));
   width: var(--container-size);
   height: var(--container-size);
   margin-inline: auto;
   margin-top: 1rem;
   background-color: lightyellow;
-  
 }
 
 .square {
   width: var(--square-size);
   height: var(--square-size);
-  background-color: rosybrown;
+  background-color: pink;
+}
+
+.hover {
+  background-color: red;
 }
