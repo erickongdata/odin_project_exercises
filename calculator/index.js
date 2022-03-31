@@ -1,3 +1,7 @@
+let displayInput = "";
+let displayOperator = "";
+let currentResult = "";
+
 function add(a, b) {
   return a + b;
 }
@@ -49,7 +53,15 @@ function drawCalculator() {
   container.classList.add("container");
   container.style.backgroundColor = "lightblue";
   // add screen
+  const screenParts = ["screen__upper", "screen__operator", "screen__main"];
   const screen = document.createElement("div");
+  for (let i = 0; i < screenParts.length; i++) {
+    const screenPart = document.createElement("div");
+    const label = screenParts[i];
+    screenPart.classList.add(label);
+    screenPart.classList.add("screen__part");
+    screen.append(screenPart);
+  }
   screen.classList.add("screen");
   screen.style.backgroundColor = "lightgreen";
   container.append(screen);
@@ -63,8 +75,16 @@ function drawCalculator() {
     div.id = className;
     container.append(div);
   }
-
   body.append(container);
 }
+
+function getState () {
+  
+}
+
+function calculator(input) {
+
+}
+
 
 drawCalculator();

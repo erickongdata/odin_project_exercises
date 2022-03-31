@@ -7,6 +7,26 @@
 
 .screen {
   grid-column: span 4;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  grid-template-rows: 1fr 2fr;
+}
+
+.screen__part {
+  border: 1px solid grey;
+}
+
+.screen__upper {
+  background-color: hsl(120, 73%, 85%);
+}
+
+.screen__operator {
+  background-color: hsl(120, 73%, 55%);
+}
+
+.screen__main {
+  background-color: hsl(120, 73%, 75%);
+  grid-column: span 2;
 }
 
 .calc-btn {
