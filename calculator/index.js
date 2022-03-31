@@ -1,7 +1,7 @@
 // screen variables
 let displayInput = "0"; // main display
 let displayOperator = ""; // upper-right
-let currentResult = ""; // upper-left
+let displayResult = ""; // upper-left
 
 function add(a, b) {
   return a + b;
@@ -33,7 +33,7 @@ function drawCalculator() {
     "7",
     "8",
     "9",
-    "multiple",
+    "multiply",
     "4",
     "5",
     "6",
@@ -46,7 +46,7 @@ function drawCalculator() {
     "period",
     "equals",
   ];
-  const buttonText = ["C", "<<", "÷", "7", "8", "9", "X", "4", "5", "6", "-", "1", "2", "3", "+", "0", ".", "="];
+  const buttonLabel = ["C", "<<", "÷", "7", "8", "9", "x", "4", "5", "6", "-", "1", "2", "3", "+", "0", ".", "="];
   // Create calculator container
   // dimensions of calculator are 7 x 4 button units
   const container = document.createElement("div");
@@ -68,14 +68,14 @@ function drawCalculator() {
   container.append(screen);
   // add buttons and activate
   for (let i = 0; i < buttonList.length; i++) {
-    const div = document.createElement("div");
-    const className = "btn-" + buttonList[i];
-    div.classList.add("calc-btn");
-    div.classList.add(className);
-    div.textContent = buttonText[i];
-    div.id = className;
-    div.addEventListener("click", () => calculator(div.id));
-    container.append(div);
+    const btn = document.createElement("div");
+    const btnValue = buttonList[i];
+    btn.classList.add("btn-" + btnValue);
+    btn.classList.add("calc-btn");
+    btn.textContent = buttonLabel[i];
+    btn.dataset.value = btnValue;
+    btn.addEventListener("click", () => calculator(btnValue));
+    container.append(btn);
   }
   // Append calculator into document and refresh screen
   body.append(container);
@@ -86,7 +86,7 @@ function updateScreen() {
   const screenUpper = document.querySelector(".screen__upper");
   const screenOperator = document.querySelector(".screen__operator");
   const screenMain = document.querySelector(".screen__main");
-  screenUpper.textContent = currentResult;
+  screenUpper.textContent = displayResult;
   screenOperator.textContent = displayOperator;
   screenMain.textContent = displayInput;
 }
@@ -94,11 +94,12 @@ function updateScreen() {
 function clearScreen() {
   displayInput = "";
   displayOperator = "";
-  currentResult = "";
+  displayResult = "";
   updateScreen();
 }
 
 function getCalculatorState() {
+  // Return a code (1-4) that depends what display variables are present
   if (displayInput) {
     if (!displayOperator) return 2;
     return 4;
@@ -107,45 +108,48 @@ function getCalculatorState() {
   return 3;
 }
 
-function operatorConvert(displayOperator, currentResult, displayInput) {
-  if (displayOperator == "+") return operate(add, currentResult, displayInput);
-  if (displayOperator == "-") return operate(subtract, currentResult, displayInput);
-  if (displayOperator == "x") return operate(multiply, currentResult, displayInput);
-  return operate(divide, currentResult, displayInput);
+function operatorConvert(displayOperator) {
+  return displayOperator == "+"
+    ? add()
+    : displayOperator == "-"
+    ? subtract()
+    : displayOperator == "x"
+    ? multiply()
+    : divide();
 }
 
 function calculator(input) {
   const state = getCalculatorState();
   console.log(input);
   switch (input) {
-    case "btn-clear":
+    case "clear":
       clearScreen();
       break;
-    case "btn-1":
-    case "btn-2":
-    case "btn-3":
-    case "btn-4":
-    case "btn-5":
-    case "btn-6":
-    case "btn-7":
-    case "btn-8":
-    case "btn-9":
+    case "1":
+    case "2":
+    case "3":
+    case "4":
+    case "5":
+    case "6":
+    case "7":
+    case "8":
+    case "9":
       // Append digit to main display
       if (displayInput != "0") {
-        console.log(input);
-        displayInput += input[4];
+        displayInput += input;
         updateScreen();
         break;
       }
       // If current display is 0 digit - remove and append new digit
-      displayInput = input[4];
+      displayInput = input;
       updateScreen();
       break;
-    case "btn-equals":
+    case "equals":
+      const currOperator = operatorConvert(displayOperator);
       if (state == 4) {
-        currentResult = operatorConvert(displayOperator, currentResult, displayInput);
-        displayInput = currentResult;
-        currentResult = "";
+        displayResult = operate(currOperator, displayResult, displayInput);
+        displayInput = displayResult;
+        displayResult = "";
         displayOperator = "";
         updateScreen();
         break;
