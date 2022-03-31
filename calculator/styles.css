@@ -33,6 +33,10 @@
   border: 2px solid black;
 }
 
+.calc-btn:hover {
+  cursor: pointer;
+}
+
 .btn-clear {
   grid-column: span 2;
 }

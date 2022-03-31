@@ -1,6 +1,7 @@
-let displayInput = "";
-let displayOperator = "";
-let currentResult = "";
+// screen variables
+let displayInput = "0"; // main display
+let displayOperator = ""; // upper-right
+let currentResult = ""; // upper-left
 
 function add(a, b) {
   return a + b;
@@ -65,7 +66,7 @@ function drawCalculator() {
   screen.classList.add("screen");
   screen.style.backgroundColor = "lightgreen";
   container.append(screen);
-  // add buttons
+  // add buttons and activate
   for (let i = 0; i < buttonList.length; i++) {
     const div = document.createElement("div");
     const className = "btn-" + buttonList[i];
@@ -73,18 +74,84 @@ function drawCalculator() {
     div.classList.add(className);
     div.textContent = buttonText[i];
     div.id = className;
+    div.addEventListener("click", () => calculator(div.id));
     container.append(div);
   }
+  // Append calculator into document and refresh screen
   body.append(container);
+  updateScreen();
 }
 
-function getState () {
-  
+function updateScreen() {
+  const screenUpper = document.querySelector(".screen__upper");
+  const screenOperator = document.querySelector(".screen__operator");
+  const screenMain = document.querySelector(".screen__main");
+  screenUpper.textContent = currentResult;
+  screenOperator.textContent = displayOperator;
+  screenMain.textContent = displayInput;
+}
+
+function clearScreen() {
+  displayInput = "";
+  displayOperator = "";
+  currentResult = "";
+  updateScreen();
+}
+
+function getCalculatorState() {
+  if (displayInput) {
+    if (!displayOperator) return 2;
+    return 4;
+  }
+  if (!displayOperator) return 1;
+  return 3;
+}
+
+function operatorConvert(displayOperator, currentResult, displayInput) {
+  if (displayOperator == "+") return operate(add, currentResult, displayInput);
+  if (displayOperator == "-") return operate(subtract, currentResult, displayInput);
+  if (displayOperator == "x") return operate(multiply, currentResult, displayInput);
+  return operate(divide, currentResult, displayInput);
 }
 
 function calculator(input) {
-
+  const state = getCalculatorState();
+  console.log(input);
+  switch (input) {
+    case "btn-clear":
+      clearScreen();
+      break;
+    case "btn-1":
+    case "btn-2":
+    case "btn-3":
+    case "btn-4":
+    case "btn-5":
+    case "btn-6":
+    case "btn-7":
+    case "btn-8":
+    case "btn-9":
+      // Append digit to main display
+      if (displayInput != "0") {
+        console.log(input);
+        displayInput += input[4];
+        updateScreen();
+        break;
+      }
+      // If current display is 0 digit - remove and append new digit
+      displayInput = input[4];
+      updateScreen();
+      break;
+    case "btn-equals":
+      if (state == 4) {
+        currentResult = operatorConvert(displayOperator, currentResult, displayInput);
+        displayInput = currentResult;
+        currentResult = "";
+        displayOperator = "";
+        updateScreen();
+        break;
+      }
+      break;
+  }
 }
-
 
 drawCalculator();
