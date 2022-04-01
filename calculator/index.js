@@ -22,12 +22,16 @@ function divide(a, b) {
 function operate(operator, a, b) {
   const result =
     operator == "+" ? add(a, b) : operator == "-" ? subtract(a, b) : operator == "x" ? multiply(a, b) : divide(a, b);
-  // This catches values that exceed limits
-  if (result > 9999999999 || result < -9999999999) {
     console.log(result);
+  // This catches values that exceed limits
+  if (result > 9999999999 || result < -9999999999 || !result) {
     clearScreen();
     displayInput = "ERROR";
     return "error";
+  }
+  if (result < 0.000001 && result > -0.000001) {
+    console.log("Very small number!")
+    return 0;
   }
   return result;
 }
@@ -188,7 +192,7 @@ function calculator(input) {
       }
       break;
     case "0":
-      if (displayInput != "0") {
+      if (displayInput != "0" && displayInput.length < 10) {
         displayInput += "0";
       }
       break;
