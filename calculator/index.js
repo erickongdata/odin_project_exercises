@@ -120,10 +120,19 @@ function getCalculatorState() {
   return 3;
 }
 
+function parseDisplayInput() {
+  // remove trailing period from input if present
+  const len = displayInput.length;
+  if (displayInput[len - 1] == ".") {
+    displayInput = displayInput.slice(0, len - 1);
+  }
+}
+
 function calculator(input) {
   const state = getCalculatorState();
-  console.log(input);
-  console.log("state" + state);
+  let calcResult = 0;
+  // console.log(input);
+  console.log("state: " + state);
   switch (input) {
     case "clear":
       clearScreen();
@@ -142,19 +151,28 @@ function calculator(input) {
     case "7":
     case "8":
     case "9":
-      // Append digit to main display
-      if (displayInput != "0") {
+      // Append digit to main display and limit max length
+      if (displayInput != "0" && displayInput.length < 10) {
         displayInput += input;
         break;
       }
       // If current display is 0 digit - remove and append new digit
-      displayInput = input;
+      if (displayInput == "0") {
+        displayInput = input;
+      }
       break;
     case "equals":
+      parseDisplayInput();
       if (state === 6) break;
       if (state === 4) {
-        displayResult = operate(displayOperator, +displayResult, +displayInput).toString();
-        displayInput = displayResult;
+        calcResult = operate(displayOperator, +displayResult, +displayInput);
+        if (calcResult > 9999999999 || calcResult < -9999999999) {
+          clearScreen();
+          displayInput = "OVERFLOW ERROR";
+          break;
+        }
+        displayResult = calcResult.toString();
+        displayInput = displayResult.slice(0, 10); // limit max length of result
         displayResult = "";
         displayOperator = "";
       }
@@ -165,7 +183,7 @@ function calculator(input) {
       }
       break;
     case "0":
-      if (displayInput) {
+      if (displayInput != "0") {
         displayInput += "0";
       }
       break;
@@ -173,6 +191,8 @@ function calculator(input) {
     case "subtract":
     case "multiply":
     case "divide":
+      parseDisplayInput();
+      // Depending on the calculator state - process the input and update the display
       if (state === 2) {
         displayResult = displayInput;
         displayOperator = convertOperator(input);
@@ -180,7 +200,13 @@ function calculator(input) {
         break;
       }
       if (state === 4) {
-        displayResult = operate(displayOperator, +displayResult, +displayInput).toString();
+        calcResult = operate(displayOperator, +displayResult, +displayInput);
+        if (calcResult > 9999999999 || calcResult < -9999999999) {
+          clearScreen();
+          displayInput = "OVERFLOW ERROR";
+          break;
+        }
+        displayResult = calcResult.toString();
         displayOperator = convertOperator(input);
         displayInput = "";
         break;
