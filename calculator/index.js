@@ -20,13 +20,16 @@ function divide(a, b) {
 }
 
 function operate(operator, a, b) {
-  return operator == "+"
-    ? add(a, b)
-    : operator == "-"
-    ? subtract(a, b)
-    : operator == "x"
-    ? multiply(a, b)
-    : divide(a, b);
+  const result =
+    operator == "+" ? add(a, b) : operator == "-" ? subtract(a, b) : operator == "x" ? multiply(a, b) : divide(a, b);
+  // This catches values that exceed limits
+  if (result > 9999999999 || result < -9999999999) {
+    console.log(result);
+    clearScreen();
+    displayInput = "ERROR";
+    return "error";
+  }
+  return result;
 }
 
 function convertOperator(operator) {
@@ -110,6 +113,7 @@ function clearScreen() {
 
 function getCalculatorState() {
   // Return a code (1-6) that depends what display variables are present
+  if (displayInput.includes("ERROR")) return 9;
   if (displayInput == ".") return 6;
   if (displayInput == "-") return 5;
   if (displayInput) {
@@ -133,6 +137,11 @@ function calculator(input) {
   let calcResult = 0;
   // console.log(input);
   console.log("state: " + state);
+  // Any input clears the screen if there is an error
+  if (state === 9) {
+    clearScreen();
+  }
+  // Assess possible inputs using switch/case statement
   switch (input) {
     case "clear":
       clearScreen();
@@ -166,11 +175,7 @@ function calculator(input) {
       if (state === 6) break;
       if (state === 4) {
         calcResult = operate(displayOperator, +displayResult, +displayInput);
-        if (calcResult > 9999999999 || calcResult < -9999999999) {
-          clearScreen();
-          displayInput = "OVERFLOW ERROR";
-          break;
-        }
+        if (calcResult == "error") break;
         displayResult = calcResult.toString();
         displayInput = displayResult.slice(0, 10); // limit max length of result
         displayResult = "";
@@ -201,11 +206,7 @@ function calculator(input) {
       }
       if (state === 4) {
         calcResult = operate(displayOperator, +displayResult, +displayInput);
-        if (calcResult > 9999999999 || calcResult < -9999999999) {
-          clearScreen();
-          displayInput = "OVERFLOW ERROR";
-          break;
-        }
+        if (calcResult == "error") break;
         displayResult = calcResult.toString();
         displayOperator = convertOperator(input);
         displayInput = "";
