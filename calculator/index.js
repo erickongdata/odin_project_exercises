@@ -64,6 +64,7 @@ function drawCalculator() {
     "equals",
   ];
   const buttonLabel = ["C", "<<", "÷", "7", "8", "9", "x", "4", "5", "6", "-", "1", "2", "3", "+", "0", ".", "="];
+  const keyCode = ["c", "Backspace", "d", "7", "8", "9", "x", "4", "5", "6", "-", "1", "2", "3", "=", "0", ".", "Enter"]
   // Create calculator container
   // dimensions of calculator are 7 x 4 button units
   const container = document.createElement("div");
@@ -87,16 +88,26 @@ function drawCalculator() {
   for (let i = 0; i < buttonList.length; i++) {
     const btn = document.createElement("div");
     const btnValue = buttonList[i];
+    const kbd = document.createElement("kbd")
+    kbd.textContent = buttonLabel[i];
     btn.classList.add("btn-" + btnValue);
     btn.classList.add("calc-btn");
-    btn.textContent = buttonLabel[i];
     btn.dataset.value = btnValue;
+    btn.dataset.key = keyCode[i];
     btn.addEventListener("click", () => calculator(btnValue));
+    btn.append(kbd);
     container.append(btn);
   }
   // Append calculator into document and refresh screen
   body.append(container);
   updateScreen();
+  // Add keyboard support
+  window.addEventListener("keydown", keyboardInput);
+}
+
+function keyboardInput(e) {
+  const key = document.querySelector(`div[data-key="${e.key}"]`);
+  calculator(key.dataset.value);
 }
 
 function updateScreen() {
