@@ -22,7 +22,7 @@ function divide(a, b) {
 function operate(operator, a, b) {
   const result =
     operator == "+" ? add(a, b) : operator == "-" ? subtract(a, b) : operator == "x" ? multiply(a, b) : divide(a, b);
-    console.log(result);
+  console.log(result);
   // This catches values that exceed limits
   if (result > 9999999999 || result < -9999999999 || !result) {
     clearScreen();
@@ -30,7 +30,7 @@ function operate(operator, a, b) {
     return "error";
   }
   if (result < 0.000001 && result > -0.000001) {
-    console.log("Very small number!")
+    console.log("Very small number!");
     return 0;
   }
   return result;
@@ -43,7 +43,7 @@ function convertOperator(operator) {
 function drawCalculator() {
   const body = document.body;
   const buttonSize = 64;
-  const buttonList = [
+  const buttonNames = [
     "clear",
     "backspace",
     "divide",
@@ -63,8 +63,27 @@ function drawCalculator() {
     "period",
     "equals",
   ];
-  const buttonLabel = ["C", "<<", "÷", "7", "8", "9", "x", "4", "5", "6", "-", "1", "2", "3", "+", "0", ".", "="];
-  const keyCode = ["c", "Backspace", "d", "7", "8", "9", "x", "4", "5", "6", "-", "1", "2", "3", "=", "0", ".", "Enter"]
+  const buttonLabels = ["C", "<<", "÷", "7", "8", "9", "x", "4", "5", "6", "-", "1", "2", "3", "+", "0", ".", "="];
+  const keyCode = [
+    "c",
+    "Backspace",
+    "d",
+    "7",
+    "8",
+    "9",
+    "x",
+    "4",
+    "5",
+    "6",
+    "-",
+    "1",
+    "2",
+    "3",
+    "=",
+    "0",
+    ".",
+    "Enter",
+  ];
   // Create calculator container
   // dimensions of calculator are 7 x 4 button units
   const container = document.createElement("div");
@@ -85,16 +104,16 @@ function drawCalculator() {
   screen.style.backgroundColor = "lightgreen";
   container.append(screen);
   // add buttons and activate
-  for (let i = 0; i < buttonList.length; i++) {
+  for (let i = 0; i < buttonNames.length; i++) {
     const btn = document.createElement("div");
-    const btnValue = buttonList[i];
-    const kbd = document.createElement("kbd")
-    kbd.textContent = buttonLabel[i];
-    btn.classList.add("btn-" + btnValue);
+    const btnName = buttonNames[i];
+    const kbd = document.createElement("kbd");
+    kbd.textContent = buttonLabels[i];
+    btn.classList.add("btn-" + btnName);
     btn.classList.add("calc-btn");
-    btn.dataset.value = btnValue;
+    btn.dataset.value = btnName;
     btn.dataset.key = keyCode[i];
-    btn.addEventListener("click", () => calculator(btnValue));
+    btn.addEventListener("click", () => calculator(btnName));
     btn.append(kbd);
     container.append(btn);
   }
