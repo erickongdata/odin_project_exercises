@@ -1,10 +1,17 @@
 const myLibrary = [];
 
 class Book {
-  constructor(title, author, pages) {
+  constructor(title, author, pages, read) {
     this.title = title;
     this.author = author;
     this.pages = pages;
+    this.read = read;
+  }
+  get readStatus() {
+    return this.read;
+  }
+  set readStatus(status) {
+    this.read = status;
   }
 }
 
@@ -21,27 +28,27 @@ function displayBooks(library) {
     const author = document.createElement("p");
     const pages = document.createElement("p");
     const closeBtn = document.createElement("button");
+    const readBtn = document.createElement("button");
     title.textContent = library[i].title;
     author.textContent = library[i].author;
     pages.textContent = "Pages: " + library[i].pages;
+    // Close Button
     closeBtn.setAttribute("type", "button");
     closeBtn.textContent = "X";
     closeBtn.dataset.index = i;
     closeBtn.addEventListener("click", deleteBook);
-    card.append(title, author, pages, closeBtn);
+    // Read Button
+    readBtn.setAttribute("type", "button");
+    readBtn.textContent = library[i].read;
+    readBtn.dataset.index = i;
+    readBtn.addEventListener("click", toggleRead);
+
+    card.append(title, author, pages, closeBtn, readBtn);
     card.classList.add("card");
     container.append(card);
   }
   body.append(container);
   container.classList.add("container");
-  container.setAttribute(
-    "style",
-    "display: grid; grid-template-columns: repeat(auto-fit, minmax(25ch, 1fr)); gap: 3ch;"
-  );
-  const cards = document.querySelectorAll(".card");
-  cards.forEach((card) =>
-    card.setAttribute("style", "border: 1px solid black; padding: 0.5em; background-color: lightyellow;")
-  );
   newBookBtn();
 }
 
@@ -50,16 +57,16 @@ function newBookBtn() {
   const btn = document.createElement("button");
   btn.textContent = "NEW BOOK";
   btn.classList.add("new-book-btn");
-  btn.style.margin = "2rem .5rem";
-  btn.style.fontSize = "1.5rem";
   btn.addEventListener("click", newBookForm);
   body.append(btn);
 }
 
 function newBookForm() {
   const body = document.body;
+  // Remove New Book Button when pressed
   const newBookBtn = document.querySelector(".new-book-btn");
   newBookBtn.remove();
+  // Add form inputs
   const form = document.createElement("form");
   const title = document.createElement("input");
   const author = document.createElement("input");
@@ -67,26 +74,27 @@ function newBookForm() {
   const inputs = [title, author, pages];
   const labels = ["Title", "Author", "Pages"];
   for (let i = 0; i < 3; i++) {
-    inputs[i].setAttribute("style", "display: block;");
     inputs[i].classList.add("new-book-" + labels[i].toLowerCase());
     form.append(labels[i], inputs[i]);
   }
   title.type = "text";
   author.type = "text";
   pages.type = "number";
+  // Submit Button
   const submit = document.createElement("button");
-  const cancel = document.createElement("button");
-  submit.setAttribute("type", "button");
-  cancel.setAttribute("type", "button");
+  submit.type = "button";
   submit.textContent = "Submit";
-  cancel.textContent = "Cancel";
   submit.id = "new-book-submit";
-  cancel.id = "new-book-cancel";
   submit.addEventListener("click", newBookSubmit);
+  // Cancel Button
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.textContent = "Cancel";
+  cancel.id = "new-book-cancel";
   cancel.addEventListener("click", newBookCancel);
+
   form.append(submit, cancel);
   form.id = "new-book-form";
-  form.setAttribute("style", "margin: 2rem auto; padding: 0.5rem; border: 1px solid black;");
   body.append(form);
 }
 
@@ -96,7 +104,7 @@ function newBookSubmit() {
   const title = document.querySelector(".new-book-title");
   const author = document.querySelector(".new-book-author");
   const pages = document.querySelector(".new-book-pages");
-  const book = new Book(title.value, author.value, pages.value);
+  const book = new Book(title.value, author.value, pages.value, "unread");
   if (title.value) {
     addBookToLibrary(book);
     form.remove();
@@ -116,11 +124,27 @@ function deleteBook() {
   const newBookBtn = document.querySelector(".new-book-btn");
   const index = this.dataset.index;
   myLibrary.splice(index, 1);
+  // Refresh library
   container.remove();
   newBookBtn.remove();
   displayBooks(myLibrary);
 }
 
-addBookToLibrary(new Book("Finding Saul", "Saul Leiter", 190));
-addBookToLibrary(new Book("LOTR", "J. R. R. Tolkien", 1098));
+function toggleRead() {
+  const container = document.querySelector(".container");
+  const newBookBtn = document.querySelector(".new-book-btn");
+  const index = this.dataset.index;
+  if (myLibrary[index].readStatus == "unread") {
+    myLibrary[index].readStatus = "read";
+  } else {
+    myLibrary[index].readStatus = "unread";
+  }
+  // Refresh library
+  container.remove();
+  newBookBtn.remove();
+  displayBooks(myLibrary);
+}
+
+addBookToLibrary(new Book("Finding Saul", "Saul Leiter", 190, "unread"));
+addBookToLibrary(new Book("LOTR", "J. R. R. Tolkien", 1098, "read"));
 displayBooks(myLibrary);
