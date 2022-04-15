@@ -1,0 +1,19 @@
+:root {
+  --clr-board: blue;
+  --clr-square: red;
+  --board-width: 300px;
+}
+
+.container{
+  width: var(--board-width);
+  height: var(--board-width);
+  background-color: var(--clr-board);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(0.1 * var(--board-width));
+  padding: calc(0.1 * var(--board-width));
+}
+
+.square {
+  background-color: var(--clr-square);
+}
