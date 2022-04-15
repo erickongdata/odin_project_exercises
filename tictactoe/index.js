@@ -17,22 +17,31 @@ const board = (() => {
       const div = document.createElement("div");
       div.classList.add("square");
       div.classList.add("square" + i);
-      // div.addEventListener("click", selectSquare);
       container.append(div);
     }
     document.body.append(container);
+  };
+
+  const printDisplay = () => {
+    for (let i = 0; i < 9; i++) {
+      const square = document.querySelector(`.square${i}`);
+      const mark = board[i] == "_" ? "_" : board[i] == "X" ? "X" : "O";
+      square.textContent = mark;
+    }
   };
 
   return {
     board,
     reset,
     createDisplay,
+    printDisplay,
   };
 })();
 
 function game() {
   board.reset();
   board.createDisplay();
+  board.printDisplay();
   console.log(board.board);
 }
 

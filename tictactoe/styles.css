@@ -10,10 +10,21 @@
   background-color: var(--clr-board);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
+  align-items: center;
   gap: calc(0.1 * var(--board-width));
   padding: calc(0.1 * var(--board-width));
 }
 
 .square {
+  width: 90%;
+  height: 90%;
+  cursor: pointer;
   background-color: var(--clr-square);
+}
+
+.square:hover {
+  width: 100%;
+  height: 100%;
+  transition: 0.2s;
 }
