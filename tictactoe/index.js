@@ -1,11 +1,13 @@
 // Board Module Pattern
 const board = (() => {
   // Initialize board
-  let board = [];
+  let board = []; // board data is kept in an array (9 elements)
+  let marker = "X";
+  // This is what is displayed for each marker
   const markerRef = {
-    "_": "_",
-    "X": "X",
-    "O": "O",
+    _: "",
+    X: "X",
+    O: "O",
   };
 
   const reset = () => {
@@ -34,13 +36,20 @@ const board = (() => {
     }
   };
 
-  const activate = (marker) => {
+  const activate = () => {
     const squares = document.querySelectorAll(".square");
     squares.forEach((sqr) =>
       sqr.addEventListener("click", () => {
         const index = sqr.dataset.value;
+        // update board data
         board[index] = marker;
+        // Display marker on selected square
         sqr.textContent = markerRef[marker];
+        // Switch marker every time a square is chosen
+        marker = marker == "X" ? "O" : "X";
+
+        // CHECK FOR WIN
+        // CHECK FULL BOARD
       })
     );
   };
@@ -55,11 +64,11 @@ const board = (() => {
 })();
 
 function game() {
-  const marker = "X";
+  // Initialize
   board.reset();
   board.createDisplay();
   board.printDisplay();
-  board.activate(marker);
+  board.activate();
   console.log(board.board);
 }
 

@@ -10,6 +10,7 @@
   background-color: var(--clr-board);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   justify-items: center;
   align-items: center;
   gap: calc(0.1 * var(--board-width));
