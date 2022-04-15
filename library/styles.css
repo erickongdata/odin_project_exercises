@@ -13,16 +13,29 @@
 #new-book-form {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  position: fixed;
+  top: 30%;
+  left: 25%;
   width: 50%;
   margin: 2rem auto;
-  padding: 0.5rem;
+  padding: 2rem;
   border: 1px solid black;
+  background-color: white;
 }
 
 #new-book-form input {
   display: block;
-  width: 90%;
+  align-self: center;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+#new-book-form label {
+  align-self: flex-start;
+}
+
+#new-book-form button {
+  align-self: center;
 }
 
 .new-book-btn {
