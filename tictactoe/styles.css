@@ -21,6 +21,7 @@
   height: 90%;
   cursor: pointer;
   background-color: var(--clr-square);
+  font-size: 3em;
 }
 
 .square:hover {
