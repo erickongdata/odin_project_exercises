@@ -22,15 +22,15 @@ const board = (() => {
     const container = document.createElement("div");
     container.classList.add("container");
     for (let i = 0; i < 9; i++) {
-      const div = document.createElement("div");
-      div.classList.add("square", "square" + i);
-      div.dataset.value = i;
-      container.append(div);
+      const square = document.createElement("button");
+      square.classList.add("square", "square" + i);
+      square.dataset.value = i;
+      container.append(square);
     }
     const statusDisplay = document.createElement("div");
     statusDisplay.classList.add("status");
-    statusDisplay.textContent = `Player ${player}`;
     document.body.append(container, statusDisplay);
+    updateStatus();
   }
 
   function printDisplay() {
@@ -42,7 +42,7 @@ const board = (() => {
 
   function updateStatus() {
     const statusDisplay = document.querySelector(".status");
-    statusDisplay.textContent = `Player ${player}`;
+    statusDisplay.textContent = `Player ${player} with ${marker}`;
   }
 
   function activate() {
@@ -55,15 +55,13 @@ const board = (() => {
         // Display marker on selected square
         sqr.textContent = markerRef[marker];
         // CHECK FOR WIN
-        if (winner(index, marker)) {
-          gameWin(marker);
-        }
-        // CHECK FULL BOARD
-        else if (!board.includes("_")) {
-          gameTie();
-        }
-        // Switch marker and player every time a square is chosen
-        else {
+        if (winner(index)) {
+          gameEnd("win");
+          // CHECK IF BOARD IS FULL
+        } else if (!board.includes("_")) {
+          gameEnd();
+        } else {
+          // Switch marker and player every time a square is chosen
           marker = marker == "X" ? "O" : "X";
           player = player == 1 ? 2 : 1;
           updateStatus();
@@ -72,7 +70,7 @@ const board = (() => {
     );
   }
 
-  function winner(index, marker) {
+  function winner(index) {
     // CHECK ROWS
     const row_ind = Math.floor(index / 3);
     const row = board.slice(row_ind * 3, (row_ind + 1) * 3);
@@ -99,18 +97,14 @@ const board = (() => {
     return false;
   }
 
-  function gameTie() {
-    console.log("It a tie");
-    gameEnd();
-  }
-
-  function gameWin() {
-    console.log(`Win for player ${player} with ${marker}`);
-    gameEnd();
-  }
-
-  function gameEnd() {
-    console.log("Game over");
+  function gameEnd(state) {
+    const statusDisplay = document.querySelector(".status");
+    if (state == "win") {
+      statusDisplay.textContent = `Player ${player} with ${marker} WINS!`;
+    } else {
+      statusDisplay.textContent = "It a tie!";
+    }
+    statusDisplay.textContent += " GAME OVER";
   }
 
   return {
