@@ -3,6 +3,7 @@ const board = (() => {
   // Initialize board
   let board = []; // board data is kept in an array (9 elements)
   let marker = "X";
+  let player = 1;
   // This is what is displayed for each marker
   const markerRef = {
     _: "",
@@ -26,7 +27,10 @@ const board = (() => {
       div.dataset.value = i;
       container.append(div);
     }
-    document.body.append(container);
+    const statusDisplay = document.createElement("div");
+    statusDisplay.classList.add("status");
+    statusDisplay.textContent = `Player ${player}`;
+    document.body.append(container, statusDisplay);
   }
 
   function printDisplay() {
@@ -34,6 +38,11 @@ const board = (() => {
       const square = document.querySelector(`.square${i}`);
       square.textContent = markerRef[board[i]];
     }
+  }
+
+  function updateStatus() {
+    const statusDisplay = document.querySelector(".status");
+    statusDisplay.textContent = `Player ${player}`;
   }
 
   function activate() {
@@ -47,21 +56,20 @@ const board = (() => {
         sqr.textContent = markerRef[marker];
         // CHECK FOR WIN
         if (winner(index, marker)) {
-          console.log(`Win for ${marker}`)
-        };
-        // CHECK FULL BOARD
-        if (boardFull()) {
-          console.log("Game over");
+          gameWin(marker);
         }
-        // Switch marker every time a square is chosen
-        marker = marker == "X" ? "O" : "X";
-
+        // CHECK FULL BOARD
+        else if (!board.includes("_")) {
+          gameTie();
+        }
+        // Switch marker and player every time a square is chosen
+        else {
+          marker = marker == "X" ? "O" : "X";
+          player = player == 1 ? 2 : 1;
+          updateStatus();
+        }
       })
     );
-  }
-
-  function boardFull() {
-    return !board.includes("_");
   }
 
   function winner(index, marker) {
@@ -89,6 +97,20 @@ const board = (() => {
       }
     }
     return false;
+  }
+
+  function gameTie() {
+    console.log("It a tie");
+    gameEnd();
+  }
+
+  function gameWin() {
+    console.log(`Win for player ${player} with ${marker}`);
+    gameEnd();
+  }
+
+  function gameEnd() {
+    console.log("Game over");
   }
 
   return {
