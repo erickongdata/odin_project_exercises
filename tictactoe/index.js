@@ -50,6 +50,7 @@ const board = (() => {
     squares.forEach((sqr) =>
       sqr.addEventListener("click", () => {
         const index = sqr.dataset.value;
+        if (board[index] != "_") return;
         // update board data
         board[index] = marker;
         // Display marker on selected square
@@ -61,13 +62,30 @@ const board = (() => {
         } else if (!board.includes("_")) {
           gameEnd();
         } else {
-          // Switch marker and player every time a square is chosen
-          marker = marker == "X" ? "O" : "X";
-          player = player == 1 ? 2 : 1;
-          updateStatus();
+          switchPlayer();
+          // Computer move
+          setTimeout(() => {
+            const compMove = computer.simple();
+            board[compMove] = marker;
+            document.querySelector(`.square${compMove}`).textContent = markerRef[marker];
+            if (winner(compMove)) {
+              gameEnd("win");
+              // CHECK IF BOARD IS FULL
+            } else if (!board.includes("_")) {
+              gameEnd();
+            } else {
+              switchPlayer();
+            }
+          }, 1000);
         }
       })
     );
+  }
+
+  function switchPlayer() {
+    marker = marker == "X" ? "O" : "X";
+    player = player == 1 ? 2 : 1;
+    updateStatus();
   }
 
   function winner(index) {
@@ -131,11 +149,33 @@ const board = (() => {
     updateStatus();
   }
 
+  function availableSquares() {
+    return board.reduce((arr, value, index) => {
+      if (value == "_") {
+        arr.push(index);
+      }
+      return arr;
+    }, []);
+  }
+
   return {
+    board,
     reset,
     createDisplay,
     printDisplay,
     activate,
+    availableSquares,
+  };
+})();
+
+// Computer module pattern
+const computer = (() => {
+  function simple() {
+    const available = board.availableSquares();
+    return available[Math.floor(Math.random() * available.length)]; // random
+  }
+  return {
+    simple,
   };
 })();
 
