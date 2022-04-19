@@ -55,29 +55,18 @@ const board = (() => {
         board[index] = marker;
         // Display marker on selected square
         sqr.textContent = markerRef[marker];
-        // CHECK FOR WIN
-        if (winner(index)) {
-          gameEnd("win");
-          // CHECK IF BOARD IS FULL
-        } else if (!board.includes("_")) {
-          gameEnd();
-        } else {
+        squares.forEach((sqr) => (sqr.disabled = true));
+        if (gameOver(index)) return;
+        switchPlayer();
+        // Computer move
+        setTimeout(() => {
+          const compMove = computer.simple();
+          board[compMove] = marker;
+          document.querySelector(`.square${compMove}`).textContent = markerRef[marker];
+          if (gameOver(compMove)) return;
           switchPlayer();
-          // Computer move
-          setTimeout(() => {
-            const compMove = computer.simple();
-            board[compMove] = marker;
-            document.querySelector(`.square${compMove}`).textContent = markerRef[marker];
-            if (winner(compMove)) {
-              gameEnd("win");
-              // CHECK IF BOARD IS FULL
-            } else if (!board.includes("_")) {
-              gameEnd();
-            } else {
-              switchPlayer();
-            }
-          }, 1000);
-        }
+          squares.forEach((sqr) => (sqr.disabled = false));
+        }, 1000);
       })
     );
   }
@@ -86,6 +75,20 @@ const board = (() => {
     marker = marker == "X" ? "O" : "X";
     player = player == 1 ? 2 : 1;
     updateStatus();
+  }
+
+  function gameOver(index) {
+    // CHECK FOR WIN
+    if (winner(index)) {
+      gameOverMessage("win");
+      return true;
+    }
+    // CHECK IF BOARD IS FULL
+    if (!board.includes("_")) {
+      gameOverMessage();
+      return true;
+    }
+    return false;
   }
 
   function winner(index) {
@@ -115,7 +118,7 @@ const board = (() => {
     return false;
   }
 
-  function gameEnd(state) {
+  function gameOverMessage(state) {
     const statusDisplay = document.querySelector(".status");
     if (state == "win") {
       statusDisplay.textContent = `Player ${player} with ${marker} WINS!`;

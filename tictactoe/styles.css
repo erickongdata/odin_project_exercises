@@ -1,4 +1,5 @@
 :root {
+  --clr-primary: black;
   --clr-board: blue;
   --clr-square: red;
   --board-width: 300px;
@@ -22,6 +23,7 @@
   height: 90%;
   cursor: pointer;
   background-color: var(--clr-square);
+  color: var(--clr-primary);
   font-size: 3em;
 }
 
