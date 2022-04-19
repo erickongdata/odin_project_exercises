@@ -105,6 +105,30 @@ const board = (() => {
       statusDisplay.textContent = "It a tie!";
     }
     statusDisplay.textContent += " GAME OVER";
+    // Disable squares
+    const squares = document.querySelectorAll(".square");
+    squares.forEach((sqr) => (sqr.disabled = true));
+    // Add Reset button
+    const resetBtn = document.createElement("button");
+    resetBtn.classList.add("reset-btn");
+    resetBtn.textContent = "Reset";
+    resetBtn.addEventListener("click", gameReset);
+    document.body.append(resetBtn);
+  }
+
+  function gameReset() {
+    // Reactivate squares
+    const squares = document.querySelectorAll(".square");
+    squares.forEach((sqr) => (sqr.disabled = false));
+    // Remove Reset button
+    const resetBtn = document.querySelector(".reset-btn");
+    resetBtn.remove();
+    // Reset board
+    marker = "X";
+    player = 1;
+    reset();
+    printDisplay();
+    updateStatus();
   }
 
   return {
