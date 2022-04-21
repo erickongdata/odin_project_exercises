@@ -45,8 +45,16 @@ const boardMod = (() => {
   }
 
   function switchPlayer() {
-    marker = marker == "X" ? "O" : "X";
-    player = player == 1 ? 2 : 1;
+    if (marker == "X") {
+      marker = "O";
+    } else marker = "X";
+
+    if (player == 1) {
+      player = 2;
+    } else {
+      player = 1;
+    }
+
     display.updateStatus();
   }
 
