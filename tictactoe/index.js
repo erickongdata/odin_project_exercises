@@ -1,48 +1,21 @@
-// Board Module Pattern
-const board = (() => {
-  // Initialize board
-  let board = []; // board data is kept in an array (9 elements)
-  let marker = "X";
-  let player = 1;
-  // This is what is displayed for each marker
-  const markerRef = {
-    _: "",
-    X: "X",
-    O: "O",
-  };
+// Initialize board
+let board = []; // board data is kept in an array (9 elements)
+let marker = "X";
+let player = 1;
+// This is what is displayed for each marker
+const markerRef = {
+  _: "",
+  X: "X",
+  O: "O",
+};
 
+// Board Module Pattern
+const boardMod = (() => {
   function reset() {
     board.length = 0; // clears array
     for (let i = 0; i < 9; i++) {
       board.push("_");
     }
-  }
-
-  function createDisplay() {
-    const container = document.createElement("div");
-    container.classList.add("container");
-    for (let i = 0; i < 9; i++) {
-      const square = document.createElement("button");
-      square.classList.add("square", "square" + i);
-      square.dataset.value = i;
-      container.append(square);
-    }
-    const statusDisplay = document.createElement("div");
-    statusDisplay.classList.add("status");
-    document.body.append(container, statusDisplay);
-    updateStatus();
-  }
-
-  function printDisplay() {
-    for (let i = 0; i < 9; i++) {
-      const square = document.querySelector(`.square${i}`);
-      square.textContent = markerRef[board[i]];
-    }
-  }
-
-  function updateStatus() {
-    const statusDisplay = document.querySelector(".status");
-    statusDisplay.textContent = `Player ${player} with ${marker}`;
   }
 
   function activate() {
@@ -74,18 +47,18 @@ const board = (() => {
   function switchPlayer() {
     marker = marker == "X" ? "O" : "X";
     player = player == 1 ? 2 : 1;
-    updateStatus();
+    display.updateStatus();
   }
 
   function gameOver(index) {
     // CHECK FOR WIN
     if (winner(index)) {
-      gameOverMessage("win");
+      display.gameOverMessage("win");
       return true;
     }
     // CHECK IF BOARD IS FULL
     if (!board.includes("_")) {
-      gameOverMessage();
+      display.gameOverMessage();
       return true;
     }
     return false;
@@ -118,6 +91,50 @@ const board = (() => {
     return false;
   }
 
+  function availableSquares() {
+    return board.reduce((arr, value, index) => {
+      if (value == "_") {
+        arr.push(index);
+      }
+      return arr;
+    }, []);
+  }
+
+  return {
+    reset,
+    activate,
+    availableSquares,
+  };
+})();
+
+const display = (() => {
+  function createBoard() {
+    const container = document.createElement("div");
+    container.classList.add("container");
+    for (let i = 0; i < 9; i++) {
+      const square = document.createElement("button");
+      square.classList.add("square", "square" + i);
+      square.dataset.value = i;
+      container.append(square);
+    }
+    const statusDisplay = document.createElement("div");
+    statusDisplay.classList.add("status");
+    document.body.append(container, statusDisplay);
+    updateStatus();
+  }
+
+  function printBoard() {
+    for (let i = 0; i < 9; i++) {
+      const square = document.querySelector(`.square${i}`);
+      square.textContent = markerRef[board[i]];
+    }
+  }
+
+  function updateStatus() {
+    const statusDisplay = document.querySelector(".status");
+    statusDisplay.textContent = `Player ${player} with ${marker}`;
+  }
+
   function gameOverMessage(state) {
     const statusDisplay = document.querySelector(".status");
     if (state == "win") {
@@ -147,34 +164,24 @@ const board = (() => {
     // Reset board
     marker = "X";
     player = 1;
-    reset();
-    printDisplay();
+    boardMod.reset();
+    printBoard();
     updateStatus();
   }
 
-  function availableSquares() {
-    return board.reduce((arr, value, index) => {
-      if (value == "_") {
-        arr.push(index);
-      }
-      return arr;
-    }, []);
-  }
-
   return {
-    board,
-    reset,
-    createDisplay,
-    printDisplay,
-    activate,
-    availableSquares,
+    createBoard,
+    printBoard,
+    updateStatus,
+    gameOverMessage,
+    gameReset,
   };
 })();
 
 // Computer module pattern
 const computer = (() => {
   function simple() {
-    const available = board.availableSquares();
+    const available = boardMod.availableSquares();
     return available[Math.floor(Math.random() * available.length)]; // random
   }
   return {
@@ -184,10 +191,10 @@ const computer = (() => {
 
 function game() {
   // Initialize
-  board.reset();
-  board.createDisplay();
-  board.printDisplay();
-  board.activate();
+  boardMod.reset();
+  display.createBoard();
+  display.printBoard();
+  boardMod.activate();
 }
 
 game();
