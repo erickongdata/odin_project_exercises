@@ -1,7 +1,8 @@
 // Initialize board
+// -------------------------------------
 let brd = []; // board data is kept in an array (9 elements)
 let marker = "X";
-let player = 1;
+let playerNo = 1;
 // This is what is displayed for each marker
 const markerSym = {
   _: "",
@@ -9,19 +10,34 @@ const markerSym = {
   O: "O",
 };
 
-function switchPlayer() {
-  if (marker == "X") {
-    marker = "O";
-  } else marker = "X";
+// Player control module
+// -------------------------------------
+const player = (() => {
+  function swap() {
+    if (marker == "X") {
+      marker = "O";
+    } else marker = "X";
 
-  if (player == 1) {
-    player = 2;
-  } else {
-    player = 1;
+    if (playerNo == 1) {
+      playerNo = 2;
+    } else {
+      playerNo = 1;
+    }
   }
-}
 
-// Board Module Pattern
+  function reset() {
+    marker = "X";
+    playerNo = 1;
+  }
+
+  return {
+    swap,
+    reset,
+  };
+})();
+
+// Board status module
+// -------------------------------------
 const board = (() => {
   function reset() {
     brd.length = 0; // clears array
@@ -30,7 +46,7 @@ const board = (() => {
     }
   }
 
-  function isGameOver(index) {
+  function gameOver(index) {
     // CHECK FOR WIN
     if (winner(index)) {
       display.gameOverMessage("win");
@@ -83,10 +99,12 @@ const board = (() => {
   return {
     reset,
     availableSquares,
-    isGameOver,
+    gameOver,
   };
 })();
 
+// Board display and status display
+// -------------------------------------
 const display = (() => {
   function createBoard() {
     const container = document.createElement("div");
@@ -111,22 +129,27 @@ const display = (() => {
   }
 
   function printStatus() {
-    const statusDisplay = document.querySelector(".status");
-    statusDisplay.textContent = `Player ${player} with ${marker}`;
+    const status = document.querySelector(".status");
+    status.textContent = `Player ${playerNo} with ${marker}`;
+  }
+
+  function printGameOver(state) {
+    const status = document.querySelector(".status");
+    if (state == "win") {
+      status.textContent = `Player ${playerNo} with ${marker} WINS!`;
+    } else {
+      status.textContent = "It a tie!";
+    }
+    status.textContent += " GAME OVER";
   }
 
   function gameOverMessage(state) {
-    const statusDisplay = document.querySelector(".status");
-    if (state == "win") {
-      statusDisplay.textContent = `Player ${player} with ${marker} WINS!`;
-    } else {
-      statusDisplay.textContent = "It a tie!";
-    }
-    statusDisplay.textContent += " GAME OVER";
-    // Disable squares
-    const squares = document.querySelectorAll(".square");
-    squares.forEach((sqr) => (sqr.disabled = true));
-    // Add Reset button
+    printGameOver(state);
+    squareControl.disable();
+    addResetBtn();
+  }
+
+  function addResetBtn() {
     const resetBtn = document.createElement("button");
     resetBtn.classList.add("reset-btn");
     resetBtn.textContent = "Reset";
@@ -134,16 +157,15 @@ const display = (() => {
     document.body.append(resetBtn);
   }
 
-  function gameReset() {
-    // Reactivate squares
-    const squares = document.querySelectorAll(".square");
-    squares.forEach((sqr) => (sqr.disabled = false));
-    // Remove Reset button
+  function deleteResetBtn() {
     const resetBtn = document.querySelector(".reset-btn");
     resetBtn.remove();
-    // Reset board
-    marker = "X";
-    player = 1;
+  }
+
+  function gameReset() {
+    squareControl.activate();
+    deleteResetBtn();
+    player.reset();
     board.reset();
     printBoard();
     printStatus();
@@ -158,30 +180,59 @@ const display = (() => {
   };
 })();
 
-// Computer module pattern
-const computer = (() => {
-  function simple() {
-    const available = board.availableSquares();
-    return available[Math.floor(Math.random() * available.length)]; // random
+// Square control module
+// -------------------------------------
+const squareControl = (() => {
+  function disable() {
+    const squares = document.querySelectorAll(".square");
+    squares.forEach((sqr) => (sqr.disabled = true));
   }
+
+  function activate() {
+    const squares = document.querySelectorAll(".square");
+    squares.forEach((sqr) => (sqr.disabled = false));
+  }
+
+  function select(index) {
+    brd[index] = marker;
+    document.querySelector(`.square${index}`).textContent = markerSym[marker];
+  }
+
   return {
-    simple,
+    disable,
+    activate,
+    select,
   };
 })();
 
-function computerMove() {
-  const squares = document.querySelectorAll(".square");
-  const compMove = computer.simple();
-  brd[compMove] = marker;
-  document.querySelector(`.square${compMove}`).textContent = markerSym[marker];
-  if (board.isGameOver(compMove)) return;
-  switchPlayer();
-  display.printStatus();
-  squares.forEach((sqr) => (sqr.disabled = false));
-}
+// Computer AI
+// -------------------------------------
+const computer = (() => {
+  function move() {
+    setTimeout(() => {
+      const index = simple();
+      squareControl.select(index);
+      if (board.gameOver(index)) return;
+      player.swap();
+      display.printStatus();
+      squareControl.activate();
+    }, 1000);
+  }
 
+  // Returns random square
+  function simple() {
+    const available = board.availableSquares();
+    return available[Math.floor(Math.random() * available.length)];
+  }
+
+  return {
+    move,
+  };
+})();
+
+// Game control and initialization
+// -------------------------------------
 function game() {
-  // Initialize
   board.reset();
   display.createBoard();
   display.printBoard();
@@ -193,17 +244,12 @@ function game() {
       sqr.addEventListener("click", () => {
         const index = sqr.dataset.value;
         if (brd[index] != "_") return;
-        // Player move
-        brd[index] = marker;
-        sqr.textContent = markerSym[marker];
-        squares.forEach((sqr) => (sqr.disabled = true));
-        if (board.isGameOver(index)) return;
-        switchPlayer();
+        squareControl.select(index);
+        squareControl.disable();
+        if (board.gameOver(index)) return;
+        player.swap();
         display.printStatus();
-        // Computer move
-        setTimeout(() => {
-          computerMove();
-        }, 1000);
+        computer.move();
       })
     );
   }
